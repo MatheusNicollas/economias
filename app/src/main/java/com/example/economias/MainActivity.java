@@ -4,7 +4,9 @@ import static android.text.TextUtils.isEmpty;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,9 +16,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        editNomeItem.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         spinnerCategoria = findViewById(R.id.spinnerCategoria);
         editValor = findViewById(R.id.editValor);
         btnAdicionar = findViewById(R.id.btnAdicionar);
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Categorias com emojis
         ArrayList<String> categorias = new ArrayList<>(Arrays.asList(
+                "Selecione uma Categoria",
                 "🛒 Mercado",
                 "🍽️ Comer Fora",
                 "👕 Roupas",
@@ -80,6 +84,39 @@ public class MainActivity extends AppCompatActivity {
             intent.putStringArrayListExtra("listaDespesas", listaDespesas);
             startActivity(intent);
         });
+
+        editValor.addTextChangedListener(new TextWatcher() {
+            private String current = "";
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!s.toString().equals(current)) {
+                    editValor.removeTextChangedListener(this);
+
+                    String cleanString = s.toString().replaceAll("[R$,.\\s]", "");
+
+                    try {
+                        double parsed = Double.parseDouble(cleanString) / 100.0;
+                        NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+                        String formatted = format.format(parsed);
+
+                        current = formatted;
+                        editValor.setText(formatted);
+                        editValor.setSelection(formatted.length());
+                    } catch (NumberFormatException e) {
+                        s.clear();
+                    }
+
+                    editValor.addTextChangedListener(this);
+                }
+            }
+        });
     }
 
     private ArrayList<String> montarListaDespesas() {
@@ -102,14 +139,28 @@ public class MainActivity extends AppCompatActivity {
         String categoriaSelecionada = spinnerCategoria.getSelectedItem().toString();
         String valorTexto = editValor.getText().toString().trim();
 
+        if (categoriaSelecionada.equals("Selecione uma Categoria")) {
+            Toast.makeText(this, "Por favor, selecione uma categoria", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (valorTexto.isEmpty()) {
             Toast.makeText(this, "Digite o valor da despesa", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        double valor = Double.parseDouble(valorTexto);
+        // Remove "R$", ponto, vírgula e espaços
+        String cleanString = valorTexto.replaceAll("[R$\\s]", "").replace(",", ".");
 
-        String categoria = categoriaSelecionada.substring(categoriaSelecionada.offsetByCodePoints(0, 1));
+        double valor;
+        try {
+            valor = Double.parseDouble(cleanString);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Valor inválido", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String categoria = categoriaSelecionada.substring(categoriaSelecionada.offsetByCodePoints(0, 1)).trim();
         String emoji = categoriaSelecionada.substring(0, categoriaSelecionada.offsetByCodePoints(0, 1));
 
         dbHelper.inserirDespesa(nomeItem, categoria, valor, emoji);

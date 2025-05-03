@@ -4,17 +4,18 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import android.view.MenuItem;
-import androidx.appcompat.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,11 +57,13 @@ public class ResumoActivity extends AppCompatActivity {
         List<Despesa> listaDespesas = dbHelper.obterTodasDespesas();
 
         HashMap<String, Double> totaisPorCategoria = new HashMap<>();
+        HashMap<String, String> categoriasEmoji = new HashMap<>();
         double totalGeral = 0.0;
 
         listViewResumo.setOnItemClickListener((parent, view, position, id) -> {
             String itemClicado = (String) parent.getItemAtPosition(position);
-            String categoria = itemClicado.split(":")[0];
+            String semEmoji = itemClicado.substring(2); // Remove o primeiro caractere (emoji)
+            String categoria = semEmoji.split(":")[0].trim(); // Pega tudo até o primeiro ":" e remove espaços
 
             Intent intent = new Intent(ResumoActivity.this, DetalhesCategoriaActivity.class);
             intent.putExtra("categoria", categoria);
@@ -70,7 +73,7 @@ public class ResumoActivity extends AppCompatActivity {
         if (listaDespesas != null) {
             for (Despesa despesa : listaDespesas) {
                 totalGeral += despesa.getValor();
-
+                categoriasEmoji.put(despesa.getCategoria(), despesa.getEmoji());
                 if (totaisPorCategoria.containsKey(despesa.getCategoria())) {
                     totaisPorCategoria.put(despesa.getCategoria(), totaisPorCategoria.get(despesa.getCategoria()) + despesa.getValor());
                 } else {
@@ -89,7 +92,7 @@ public class ResumoActivity extends AppCompatActivity {
         for (Map.Entry<String, Double> entry : totaisPorCategoria.entrySet()) {
             String categoria = entry.getKey();
             double valor = entry.getValue();
-            resumoLista.add(categoria + ": R$ " + String.format("%.2f", valor));
+            resumoLista.add(categoriasEmoji.get(categoria) + " " + categoria + ": R$ " + String.format("%.2f", valor));
             pieEntries.add(new PieEntry((float) valor, categoria));
         }
 
