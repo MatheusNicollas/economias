@@ -1,13 +1,17 @@
 package com.example.economias;
 
+import static android.text.TextUtils.isEmpty;
+
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 public class DetalhesCategoriaActivity extends AppCompatActivity {
 
@@ -44,28 +48,24 @@ public class DetalhesCategoriaActivity extends AppCompatActivity {
         String categoria = getIntent().getStringExtra("categoria");
         textCategoria.setText(categoria);
 
-        ArrayList<String> despesasCategoria = dbHelper.obterDespesasPorCategoria(categoria);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, despesasCategoria);
-        listViewDetalhes.setAdapter(adapter);
+        List<Despesa> despesasCategoria = dbHelper.obterDespesasPorCategoria(categoria);
+        ArrayList<String> despesasFormatadas = new ArrayList<>();
 
-        HashMap<String, Double> totaisPorCategoria = new HashMap<>();
         double totalGeral = 0.0;
 
-        for (String despesa : despesasCategoria) {
-            String[] partes = despesa.split(": R\\$ ");
-            if (partes.length != 2) continue;
-            String categoriaObj = partes[0];
-            double valor = Double.parseDouble(partes[1].replace(",", "."));
+        for (Despesa despesa : despesasCategoria) {
+            String nomeOuCategoria = isEmpty(despesa.getNome()) ? despesa.getCategoria() : despesa.getNome();
+            String valorFormatado = String.format("%.2f", despesa.getValor()).replace(".", ",");
+            String linha = "■ " + nomeOuCategoria + ": R$ " + valorFormatado + "\n📆 " + despesa.getDataDespesa();
+            despesasFormatadas.add(linha);
 
-            totalGeral += valor;
-
-            if (totaisPorCategoria.containsKey(categoriaObj)) {
-                totaisPorCategoria.put(categoriaObj, totaisPorCategoria.get(categoriaObj) + valor);
-            } else {
-                totaisPorCategoria.put(categoriaObj, valor);
-            }
+            totalGeral += despesa.getValor();
         }
 
-        textTotal.setText("💰 Total gasto: R$ " + String.format("%.2f", totalGeral));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, despesasFormatadas);
+        listViewDetalhes.setAdapter(adapter);
+
+        textTotal.setText("💰 Total gasto: R$ " + String.format("%.2f", totalGeral).replace(".", ","));
     }
+
 }

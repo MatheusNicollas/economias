@@ -2,10 +2,10 @@ package com.example.economias;
 
 import static android.text.TextUtils.isEmpty;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> listaDespesas;
     private ArrayAdapter<String> despesasAdapter;
     private DatabaseHelper dbHelper;
+    private EditText editData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,24 @@ public class MainActivity extends AppCompatActivity {
         btnResumo = findViewById(R.id.btnResumo);
         editNomeItem = findViewById(R.id.editNomeItem);
         listViewDespesas = findViewById(R.id.listViewDespesas);
+        editData = findViewById(R.id.editData);
+
+        editData.setOnClickListener(v -> {
+            final Calendar calendario = Calendar.getInstance();
+            int ano = calendario.get(Calendar.YEAR);
+            int mes = calendario.get(Calendar.MONTH);
+            int dia = calendario.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePicker = new DatePickerDialog(
+                    this,
+                    (view, year, month, dayOfMonth) -> {
+                        String dataFormatada = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year);
+                        editData.setText(dataFormatada);
+                    },
+                    ano, mes, dia
+            );
+            datePicker.show();
+        });
 
         // Categorias com emojis
         ArrayList<String> categorias = new ArrayList<>(Arrays.asList(
@@ -138,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
         String nomeItem = editNomeItem.getText().toString().trim();
         String categoriaSelecionada = spinnerCategoria.getSelectedItem().toString();
         String valorTexto = editValor.getText().toString().trim();
+        String dataDespesa = editData.getText().toString().trim();
 
         if (categoriaSelecionada.equals("Selecione uma Categoria")) {
             Toast.makeText(this, "Por favor, selecione uma categoria", Toast.LENGTH_SHORT).show();
@@ -163,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
         String categoria = categoriaSelecionada.substring(categoriaSelecionada.offsetByCodePoints(0, 1)).trim();
         String emoji = categoriaSelecionada.substring(0, categoriaSelecionada.offsetByCodePoints(0, 1));
 
-        dbHelper.inserirDespesa(nomeItem, categoria, valor, emoji);
+        dbHelper.inserirDespesa(nomeItem, categoria, valor, emoji, dataDespesa);
 
         listaDespesas.clear();
         listaDespesas.addAll(montarListaDespesas());

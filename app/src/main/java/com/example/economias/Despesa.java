@@ -1,10 +1,20 @@
 package com.example.economias;
+
 public class Despesa {
 
     private String id;
     private String nome;
     private String categoria;
     private Double valor;
+    private String dataDespesa;
+
+    public String getDataDespesa() {
+        return dataDespesa;
+    }
+
+    public void setDataDespesa(String dataDespesa) {
+        this.dataDespesa = dataDespesa;
+    }
 
     public String getEmoji() {
         return emoji;
