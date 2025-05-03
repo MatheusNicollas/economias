@@ -4,6 +4,7 @@ import static android.text.TextUtils.isEmpty;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,9 +15,12 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -67,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Categorias com emojis
         ArrayList<String> categorias = new ArrayList<>(Arrays.asList(
-                "Selecione uma Categoria",
+                "▼ Selecione uma Categoria",
                 "🛒 Mercado",
                 "🍽️ Comer Fora",
                 "👕 Roupas",
@@ -154,13 +158,14 @@ public class MainActivity extends AppCompatActivity {
         return despesasStr;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void adicionarDespesa() {
         String nomeItem = editNomeItem.getText().toString().trim();
         String categoriaSelecionada = spinnerCategoria.getSelectedItem().toString();
         String valorTexto = editValor.getText().toString().trim();
         String dataDespesa = editData.getText().toString().trim();
 
-        if (categoriaSelecionada.equals("Selecione uma Categoria")) {
+        if (categoriaSelecionada.equals("▼ Selecione uma Categoria")) {
             Toast.makeText(this, "Por favor, selecione uma categoria", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -168,6 +173,11 @@ public class MainActivity extends AppCompatActivity {
         if (valorTexto.isEmpty()) {
             Toast.makeText(this, "Digite o valor da despesa", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        if (dataDespesa.isEmpty()) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            dataDespesa = LocalDate.now().format(formatter);
         }
 
         // Remove "R$", ponto, vírgula e espaços
@@ -192,5 +202,7 @@ public class MainActivity extends AppCompatActivity {
 
         editNomeItem.setText("");
         editValor.setText("");
+        spinnerCategoria.setSelection(0);
+        editData.setText("");
     }
 }

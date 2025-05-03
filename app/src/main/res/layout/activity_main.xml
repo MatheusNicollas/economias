@@ -18,13 +18,16 @@
         <Spinner
             android:id="@+id/spinnerCategoria"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:padding="12dp"/>
 
         <EditText
             android:id="@+id/editNomeItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nome do item (Opcional)"
+            android:hint="🏷️ Nome (Opcional)"
             android:inputType="textCapSentences"
             android:layout_marginBottom="8dp"/>
 
@@ -32,7 +35,7 @@
             android:id="@+id/editValor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Valor da despesa"
+            android:hint="💰 Preço"
             android:inputType="numberDecimal"
             android:layout_marginTop="8dp"/>
 
@@ -40,7 +43,7 @@
             android:id="@+id/editData"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Data da despesa"
+            android:hint="📆 Data"
             android:focusable="false"
             android:clickable="true"
             android:layout_marginTop="8dp"/>
