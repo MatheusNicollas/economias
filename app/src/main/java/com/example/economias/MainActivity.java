@@ -34,11 +34,11 @@ public class MainActivity extends AppCompatActivity {
     private EditText editNomeItem;
     private Button btnAdicionar, btnResumo;
     private ListView listViewDespesas;
-    private ArrayList<String> listaDespesas;
-    private ArrayAdapter<String> despesasAdapter;
+    private List<Despesa> listaDespesas;
     private DatabaseHelper dbHelper;
     private EditText editData;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
             datePicker.show();
         });
 
-        // Categorias com emojis
         ArrayList<String> categorias = new ArrayList<>(Arrays.asList(
                 "▼ Selecione uma Categoria",
                 "🛒 Mercado",
@@ -94,18 +93,14 @@ public class MainActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
 
-        montarListaDespesas();
-
-        listaDespesas = montarListaDespesas();
-
-        despesasAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listaDespesas);
-        listViewDespesas.setAdapter(despesasAdapter);
+        atualizarListaDespesas();
 
         btnAdicionar.setOnClickListener(v -> adicionarDespesa());
 
         btnResumo.setOnClickListener(v -> {
+            // Passa lista de strings para a activity de resumo
             Intent intent = new Intent(MainActivity.this, ResumoActivity.class);
-            intent.putStringArrayListExtra("listaDespesas", listaDespesas);
+            intent.putStringArrayListExtra("listaDespesas", montarListaDespesasString());
             startActivity(intent);
         });
 
@@ -143,14 +138,36 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private ArrayList<String> montarListaDespesas() {
-        List<Despesa> despesas = dbHelper.obterTodasDespesas();
-        ArrayList<String> despesasStr = new ArrayList<>();
+    public void atualizarListaDespesas() {
+        listaDespesas = dbHelper.obterTodasDespesas();
+        DespesaAdapter adapter = new DespesaAdapter(this, listaDespesas, dbHelper, this::atualizarListaDespesas);
+        listViewDespesas.setAdapter(adapter);
 
-        for (Despesa d : despesas) {
+        listViewDespesas.setOnItemClickListener((parent, view, position, id) -> {
+            Despesa despesaSelecionada = listaDespesas.get(position);
+            String categoriaSelecionada = despesaSelecionada.getCategoria();
+
+            Intent intent = new Intent(MainActivity.this, DetalhesCategoriaActivity.class);
+            intent.putExtra("categoria", categoriaSelecionada);
+            startActivityForResult(intent, 1);
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            atualizarListaDespesas();
+        }
+    }
+
+    private ArrayList<String> montarListaDespesasString() {
+        ArrayList<String> despesasStr = new ArrayList<>();
+        for (Despesa d : listaDespesas) {
             String valor = ": R$ " + String.format("%.2f", d.getValor());
             if (isEmpty(d.getNome())) {
-                despesasStr.add(d.getEmoji() + " "+ d.getCategoria() + valor);
+                despesasStr.add(d.getEmoji() + " " + d.getCategoria() + valor);
             } else {
                 despesasStr.add(d.getEmoji() + " " + d.getNome() + valor);
             }
@@ -180,10 +197,11 @@ public class MainActivity extends AppCompatActivity {
             dataDespesa = LocalDate.now().format(formatter);
         }
 
-        // Remove "R$", ponto, vírgula e espaços
-        String cleanString = valorTexto.replaceAll("[R$\\s]", "").replace(",", ".");
-
+        String cleanString = valorTexto.replaceAll("[^0-9,.]", "");
+        cleanString = cleanString.replace(",", ".");
+        cleanString = cleanString.replaceAll("\\.(?=.*\\.)", "");
         double valor;
+
         try {
             valor = Double.parseDouble(cleanString);
         } catch (NumberFormatException e) {
@@ -196,9 +214,7 @@ public class MainActivity extends AppCompatActivity {
 
         dbHelper.inserirDespesa(nomeItem, categoria, valor, emoji, dataDespesa);
 
-        listaDespesas.clear();
-        listaDespesas.addAll(montarListaDespesas());
-        despesasAdapter.notifyDataSetChanged();
+        atualizarListaDespesas();
 
         editNomeItem.setText("");
         editValor.setText("");

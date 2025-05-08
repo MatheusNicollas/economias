@@ -2,7 +2,7 @@ package com.example.economias;
 
 public class Despesa {
 
-    private String id;
+    private int id;
     private String nome;
     private String categoria;
     private Double valor;
@@ -26,11 +26,11 @@ public class Despesa {
 
     private String emoji;
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

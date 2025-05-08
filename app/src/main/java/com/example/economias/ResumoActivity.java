@@ -32,7 +32,7 @@ public class ResumoActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            finish(); // Fecha a Activity atual e volta para a anterior
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);

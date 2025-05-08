@@ -66,6 +66,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Despesa despesa = new Despesa();
+                despesa.setId(cursor.getInt(0));
                 despesa.setNome(cursor.getString(1));
                 despesa.setCategoria(cursor.getString(2));
                 despesa.setValor(cursor.getDouble(3));
@@ -88,6 +89,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Despesa despesa = new Despesa();
+                despesa.setId(cursor.getInt(0));
                 despesa.setNome(cursor.getString(1));
                 despesa.setCategoria(cursor.getString(2));
                 despesa.setValor(cursor.getDouble(3));
@@ -100,5 +102,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return despesas;
+    }
+
+    public void apagarDespesa(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_DESPESAS, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
+        db.close();
     }
 }
