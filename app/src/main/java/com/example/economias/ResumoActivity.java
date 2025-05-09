@@ -87,15 +87,14 @@ public class ResumoActivity extends AppCompatActivity {
         });
 
         exibirListaDespesaPorCategoria();
-        DespesasPorCategoria result = getMapearDespesasPorCategoria(listaDespesas);
+        DespesasPorCategoria result = mapearDespesasPorCategoria(listaDespesas);
         exibirTotalGeral(listaDespesas);
-        ListaEGraficoDeDespesas despesasPorCategoria = getMapearListaEGraficoDeDespesas(result);
-
+        GraficoDespesas despesasPorCategoria = mapearListaEGraficoDeDespesas(result);
         plotarGraficoDespesasPorCategoria(despesasPorCategoria);
 
     }
 
-    private void plotarGraficoDespesasPorCategoria(ListaEGraficoDeDespesas despesasPorCategoria) {
+    private void plotarGraficoDespesasPorCategoria(GraficoDespesas despesasPorCategoria) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.item_categoria_resumo, R.id.textCategoriaValor, despesasPorCategoria.resumoLista);
         listViewResumo.setAdapter(adapter);
 
@@ -123,7 +122,7 @@ public class ResumoActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private static ListaEGraficoDeDespesas getMapearListaEGraficoDeDespesas(DespesasPorCategoria result) {
+    private static GraficoDespesas mapearListaEGraficoDeDespesas(DespesasPorCategoria result) {
         ArrayList<String> resumoLista = new ArrayList<>();
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
 
@@ -133,22 +132,12 @@ public class ResumoActivity extends AppCompatActivity {
             resumoLista.add(result.categoriasEmoji.get(categoria) + " " + categoria + ": R$ " + String.format("%.2f", valor));
             pieEntries.add(new PieEntry((float) valor, categoria));
         }
-        ListaEGraficoDeDespesas despesasPorCategoria = new ListaEGraficoDeDespesas(resumoLista, pieEntries);
+        GraficoDespesas despesasPorCategoria = new GraficoDespesas(resumoLista, pieEntries);
         return despesasPorCategoria;
     }
 
-    private static class ListaEGraficoDeDespesas {
-        public final ArrayList<String> resumoLista;
-        public final ArrayList<PieEntry> pieEntries;
-
-        public ListaEGraficoDeDespesas(ArrayList<String> resumoLista, ArrayList<PieEntry> pieEntries) {
-            this.resumoLista = resumoLista;
-            this.pieEntries = pieEntries;
-        }
-    }
-
     @NonNull
-    private static DespesasPorCategoria getMapearDespesasPorCategoria(List<Despesa> listaDespesas) {
+    private static DespesasPorCategoria mapearDespesasPorCategoria(List<Despesa> listaDespesas) {
         HashMap<String, Double> totaisPorCategoria = new HashMap<>();
         HashMap<String, String> categoriasEmoji = new HashMap<>();
 
@@ -163,16 +152,6 @@ public class ResumoActivity extends AppCompatActivity {
             }
         }
         return new DespesasPorCategoria(totaisPorCategoria, categoriasEmoji);
-    }
-
-    private static class DespesasPorCategoria {
-        public final HashMap<String, Double> totaisPorCategoria;
-        public final HashMap<String, String> categoriasEmoji;
-
-        public DespesasPorCategoria(HashMap<String, Double> totaisPorCategoria, HashMap<String, String> categoriasEmoji) {
-            this.totaisPorCategoria = totaisPorCategoria;
-            this.categoriasEmoji = categoriasEmoji;
-        }
     }
 
     private void exibirTotalGeral(List<Despesa> listaDespesas) {
