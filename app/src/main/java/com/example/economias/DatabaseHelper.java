@@ -45,7 +45,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // Método para inserir despesa
     public void inserirDespesa(String nomeItem, String categoria, double valor, String emoji, String dataDespesa) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -109,4 +108,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete(TABLE_DESPESAS, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
         db.close();
     }
+
+    public List<Despesa> obterDespesasPorData(String dataInicio, String dataFim) {
+        List<Despesa> despesas = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + TABLE_DESPESAS +
+                        " WHERE date(" + COLUMN_DATA_DESPESA + ") BETWEEN date(?) AND date(?)",
+                new String[]{dataInicio, dataFim});
+
+        if (cursor.moveToFirst()) {
+            do {
+                Despesa despesa = new Despesa();
+                despesa.setId(cursor.getInt(0));
+                despesa.setNome(cursor.getString(1));
+                despesa.setCategoria(cursor.getString(2));
+                despesa.setValor(cursor.getDouble(3));
+                despesa.setEmoji(cursor.getString(4));
+                despesa.setDataDespesa(cursor.getString(5));
+                despesas.add(despesa);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return despesas;
+    }
+
 }

@@ -16,6 +16,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -53,7 +56,7 @@ public class DespesaAdapter extends ArrayAdapter<Despesa> {
         String valorFormatado = formatoBrasileiro.format(despesa.getValor());
 
         txtDespesa.setText(despesa.getEmoji() + " " + nome + ": " + valorFormatado);
-        txtData.setText("📆 " + despesa.getDataDespesa());
+        txtData.setText("📆 " + Utils.formatarDataParaExibicao(despesa.getDataDespesa()));
 
         btnDelete.setOnClickListener(v -> {
             new AlertDialog.Builder(context)

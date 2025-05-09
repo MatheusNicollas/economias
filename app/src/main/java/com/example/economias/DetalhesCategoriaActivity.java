@@ -3,6 +3,8 @@ package com.example.economias;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -66,7 +68,7 @@ public class DetalhesCategoriaActivity extends AppCompatActivity {
                 this,
                 despesas,
                 dbHelper,
-                this::carregarDespesas // callback para atualizar lista após exclusão
+                this::carregarDespesas
         );
 
         listViewDetalhes.setAdapter(adapter);

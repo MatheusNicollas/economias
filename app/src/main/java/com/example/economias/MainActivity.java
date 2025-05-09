@@ -192,8 +192,8 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         if (dataDespesa.isEmpty()) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             dataDespesa = LocalDate.now().format(formatter);
         }
 
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
         String categoria = categoriaSelecionada.substring(categoriaSelecionada.offsetByCodePoints(0, 1)).trim();
         String emoji = categoriaSelecionada.substring(0, categoriaSelecionada.offsetByCodePoints(0, 1));
 
-        dbHelper.inserirDespesa(nomeItem, categoria, valor, emoji, dataDespesa);
+        dbHelper.inserirDespesa(nomeItem, categoria, valor, emoji, Utils.formatarDataParaBanco(dataDespesa));
 
         atualizarListaDespesas();
 
