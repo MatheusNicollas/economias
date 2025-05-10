@@ -42,4 +42,5 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("org.projectlombok:lombok:1.18.28")
+    implementation ("com.github.GrenderG:Toasty:1.5.2")
 }

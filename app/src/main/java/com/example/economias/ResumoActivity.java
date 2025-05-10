@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import es.dmoral.toasty.Toasty;
+
 public class ResumoActivity extends AppCompatActivity {
 
     private ListView listViewResumo;
@@ -77,19 +79,19 @@ public class ResumoActivity extends AppCompatActivity {
         setupDatePicker(editDataFim);
 
         dbHelper = new DatabaseHelper(this);
-        listaDespesas = dbHelper.obterTodasDespesas();
+        listaDespesas = dbHelper.obterDespesasPorData(editDataInicio.getText().toString(), editDataFim.getText().toString());
 
         btnFiltrar.setOnClickListener(v -> {
             String dataInicio = editDataInicio.getText().toString();
             String dataFim = editDataFim.getText().toString();
 
             if (isEmpty(editDataInicio.getText())) {
-                Toast.makeText(this, "Por favor, selecione uma data de início", Toast.LENGTH_SHORT).show();
+                Toasty.warning(this, "Por favor, selecione uma data de início", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (isEmpty(editDataFim.getText())){
-                Toast.makeText(this, "Por favor, selecione uma data de Fim", Toast.LENGTH_SHORT).show();
+                Toasty.warning(this, "Por favor, selecione uma data de Fim", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -131,7 +133,7 @@ public class ResumoActivity extends AppCompatActivity {
         tempCalendario.set(Calendar.YEAR, ano);
 
         String nomeMes = new SimpleDateFormat("MMMM", Locale.getDefault()).format(tempCalendario.getTime());
-        String tituloResumo = String.format("Resumo - %s %04d", nomeMes, ano);
+        String tituloResumo = String.format("Despesas de %s de %04d", nomeMes, ano);
 
         textResumo.setText(tituloResumo);
     }

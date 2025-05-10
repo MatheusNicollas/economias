@@ -57,10 +57,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public List<Despesa> obterTodasDespesas() {
+    public List<Despesa> obterDespesasAdicionadasRecentemente() {
         List<Despesa> despesas = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_DESPESAS + " ORDER BY id DESC", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_DESPESAS + " ORDER BY id DESC LIMIT 15", null);
 
         if (cursor.moveToFirst()) {
             do {

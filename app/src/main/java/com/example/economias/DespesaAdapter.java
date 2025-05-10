@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import es.dmoral.toasty.Toasty;
+
 public class DespesaAdapter extends ArrayAdapter<Despesa> {
 
     private Context context;
@@ -72,7 +74,7 @@ public class DespesaAdapter extends ArrayAdapter<Despesa> {
                             ((DetalhesCategoriaActivity) context).setResult(RESULT_OK);
                         }
 
-                        Toast.makeText(context, "Despesa excluída", Toast.LENGTH_SHORT).show();
+                        Toasty.success(context, "Despesa excluída", Toast.LENGTH_SHORT).show();
                     })
                     .setNegativeButton("Cancelar", null)
                     .show();

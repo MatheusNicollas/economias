@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#424242</color> <!-- Grafite médio -->
+    <color name="colorPrimary">#212121</color> <!-- Grafite médio -->
     <color name="colorPrimaryDark">#212121</color> <!-- Grafite escuro -->
     <color name="colorAccent">#FF5722</color> <!-- Laranja vibrante (destaque) -->
     <color name="backgroundColor">#FAFAFA</color> <!-- Fundo claro (cinza bem claro) -->

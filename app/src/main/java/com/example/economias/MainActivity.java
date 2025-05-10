@@ -27,6 +27,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import es.dmoral.toasty.Toasty;
+
 public class MainActivity extends AppCompatActivity {
 
     private Spinner spinnerCategoria;
@@ -139,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void atualizarListaDespesas() {
-        listaDespesas = dbHelper.obterTodasDespesas();
+        listaDespesas = dbHelper.obterDespesasAdicionadasRecentemente();
         DespesaAdapter adapter = new DespesaAdapter(this, listaDespesas, dbHelper, this::atualizarListaDespesas);
         listViewDespesas.setAdapter(adapter);
 
@@ -183,12 +185,12 @@ public class MainActivity extends AppCompatActivity {
         String dataDespesa = editData.getText().toString().trim();
 
         if (categoriaSelecionada.equals("▼ Selecione uma Categoria")) {
-            Toast.makeText(this, "Por favor, selecione uma categoria", Toast.LENGTH_SHORT).show();
+            Toasty.warning(this, "Por favor, selecione uma categoria", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (valorTexto.isEmpty()) {
-            Toast.makeText(this, "Digite o valor da despesa", Toast.LENGTH_SHORT).show();
+            Toasty.warning(this, "Digite o valor da despesa", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -205,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             valor = Double.parseDouble(cleanString);
         } catch (NumberFormatException e) {
-            Toast.makeText(this, "Valor inválido", Toast.LENGTH_SHORT).show();
+            Toasty.error(this, "Valor inválido", Toast.LENGTH_SHORT).show();
             return;
         }
 
