@@ -1,4 +1,4 @@
-package com.example.economias;
+package com.example.economias.adapter;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -15,10 +15,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.economias.activity.DetalhesCategoriaActivity;
+import com.example.economias.activity.MainActivity;
+import com.example.economias.R;
+import com.example.economias.utils.Utils;
+import com.example.economias.data.DatabaseHelper;
+import com.example.economias.data.Despesa;
+
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 

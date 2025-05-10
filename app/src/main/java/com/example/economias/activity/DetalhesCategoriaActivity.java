@@ -1,14 +1,17 @@
-package com.example.economias;
+package com.example.economias.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.economias.R;
+import com.example.economias.adapter.DespesaAdapter;
+import com.example.economias.data.DatabaseHelper;
+import com.example.economias.data.Despesa;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

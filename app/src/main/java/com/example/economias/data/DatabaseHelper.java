@@ -1,4 +1,4 @@
-package com.example.economias;
+package com.example.economias.data;
 
 import android.content.ContentValues;
 import android.content.Context;
