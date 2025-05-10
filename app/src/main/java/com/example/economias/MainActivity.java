@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             DatePickerDialog datePicker = new DatePickerDialog(
                     this,
                     (view, year, month, dayOfMonth) -> {
-                        String dataFormatada = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year);
+                        String dataFormatada = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth);
                         editData.setText(dataFormatada);
                     },
                     ano, mes, dia
@@ -192,8 +192,8 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         if (dataDespesa.isEmpty()) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             dataDespesa = LocalDate.now().format(formatter);
         }
 
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
         String categoria = categoriaSelecionada.substring(categoriaSelecionada.offsetByCodePoints(0, 1)).trim();
         String emoji = categoriaSelecionada.substring(0, categoriaSelecionada.offsetByCodePoints(0, 1));
 
-        dbHelper.inserirDespesa(nomeItem, categoria, valor, emoji, Utils.formatarDataParaBanco(dataDespesa));
+        dbHelper.inserirDespesa(nomeItem, categoria, valor, emoji, dataDespesa);
 
         atualizarListaDespesas();
 

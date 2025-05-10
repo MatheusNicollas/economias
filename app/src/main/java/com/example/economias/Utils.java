@@ -18,18 +18,4 @@ public class Utils {
             return dataOriginal;
         }
     }
-
-    public static String formatarDataParaBanco(String dataExibicao) {
-        SimpleDateFormat formatoExibicao = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat formatoBanco = new SimpleDateFormat("yyyy-MM-dd");
-
-        try {
-            Date data = formatoExibicao.parse(dataExibicao);
-            return formatoBanco.format(data);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return dataExibicao;
-        }
-    }
-
 }

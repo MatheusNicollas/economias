@@ -2,6 +2,7 @@ package com.example.economias;
 
 import static android.text.TextUtils.isEmpty;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -23,9 +24,12 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class ResumoActivity extends AppCompatActivity {
@@ -38,6 +42,7 @@ public class ResumoActivity extends AppCompatActivity {
     private EditText editDataFim;
     private Button btnFiltrar;
     private List<Despesa> listaDespesas;
+    private TextView textResumo;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -65,6 +70,11 @@ public class ResumoActivity extends AppCompatActivity {
         listViewResumo = findViewById(R.id.listViewResumo);
         pieChart = findViewById(R.id.pieChart);
         textTotalGeral = findViewById(R.id.textTotalGeral);
+        textResumo = findViewById(R.id.textResumo);
+
+        settarValoresPadraoParaDatas();
+        setupDatePicker(editDataInicio);
+        setupDatePicker(editDataFim);
 
         dbHelper = new DatabaseHelper(this);
         listaDespesas = dbHelper.obterTodasDespesas();
@@ -84,6 +94,12 @@ public class ResumoActivity extends AppCompatActivity {
             }
 
             listaDespesas = dbHelper.obterDespesasPorData(dataInicio, dataFim);
+
+            exibirListaDespesaPorCategoria();
+            DespesasPorCategoria result = mapearDespesasPorCategoria(listaDespesas);
+            exibirTotalGeral(listaDespesas);
+            GraficoDespesas despesasPorCategoria = mapearListaEGraficoDeDespesas(result);
+            plotarGraficoDespesasPorCategoria(despesasPorCategoria);
         });
 
         exibirListaDespesaPorCategoria();
@@ -94,11 +110,64 @@ public class ResumoActivity extends AppCompatActivity {
 
     }
 
+    private void settarValoresPadraoParaDatas() {
+        Calendar calendario = Calendar.getInstance();
+        int ano = calendario.get(Calendar.YEAR);
+        int mes = calendario.get(Calendar.MONTH) + 1; // Janeiro = 0 então +1
+        int ultimoDia = calendario.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        String primeiroDia = String.format("%04d-%02d-01", ano, mes);
+        String ultimoDiaFormatado = String.format("%04d-%02d-%02d", ano, mes, ultimoDia);
+
+        editDataInicio.setText(primeiroDia);
+        editDataFim.setText(ultimoDiaFormatado);
+
+        atualizarTituloResumo(mes, ano);
+    }
+
+    private void atualizarTituloResumo(int mes, int ano) {
+        Calendar tempCalendario = Calendar.getInstance();
+        tempCalendario.set(Calendar.MONTH, mes - 1); // Ajusta para janeiro = 0
+        tempCalendario.set(Calendar.YEAR, ano);
+
+        String nomeMes = new SimpleDateFormat("MMMM", Locale.getDefault()).format(tempCalendario.getTime());
+        String tituloResumo = String.format("Resumo - %s %04d", nomeMes, ano);
+
+        textResumo.setText(tituloResumo);
+    }
+
+    private void setupDatePicker(EditText editText) {
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                mostrarDatePicker(editText);
+            }
+        });
+
+        editText.setOnClickListener(v -> mostrarDatePicker(editText));
+    }
+
+    private void mostrarDatePicker(EditText editText) {
+        final Calendar calendario = Calendar.getInstance();
+        int ano = calendario.get(Calendar.YEAR);
+        int mes = calendario.get(Calendar.MONTH);
+        int dia = calendario.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePicker = new DatePickerDialog(
+                this,
+                (view, year, month, dayOfMonth) -> {
+                    String dataFormatada = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                    editText.setText(dataFormatada);
+                },
+                ano, mes, dia
+        );
+        atualizarTituloResumo(mes, ano);
+        datePicker.show();
+    }
+
     private void plotarGraficoDespesasPorCategoria(GraficoDespesas despesasPorCategoria) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.item_categoria_resumo, R.id.textCategoriaValor, despesasPorCategoria.resumoLista);
         listViewResumo.setAdapter(adapter);
 
-        // Exibir gráfico pizza
         PieDataSet dataSet = new PieDataSet(despesasPorCategoria.pieEntries, "Despesas por Categoria");
         dataSet.setColors(getColors());
         dataSet.setValueTextSize(12f);
