@@ -80,10 +80,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return despesas;
     }
 
-    public List<Despesa> obterDespesasPorCategoria(String categoriaFiltro) {
+    public List<Despesa> obterDespesasPorCategoriaEData(String categoriaFiltro, String dataInicio, String dataFim) {
         List<Despesa> despesas = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_DESPESAS + " WHERE " + COLUMN_CATEGORIA + " = ?", new String[]{categoriaFiltro});
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_DESPESAS + " WHERE " + COLUMN_CATEGORIA + " = ?" +
+                        " AND date(" + COLUMN_DATA_DESPESA + ") BETWEEN date(?) AND date(?)",
+                new String[]{categoriaFiltro, dataInicio, dataFim});
 
         if (cursor.moveToFirst()) {
             do {

@@ -10,7 +10,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class DetalhesCategoriaActivity extends AppCompatActivity {
 
@@ -19,6 +22,9 @@ public class DetalhesCategoriaActivity extends AppCompatActivity {
     private TextView textTotal;
     private DatabaseHelper dbHelper;
     private String categoriaAtual;
+    private String dataInicio;
+    private String dataFim;
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -47,10 +53,29 @@ public class DetalhesCategoriaActivity extends AppCompatActivity {
         textTotal = findViewById(R.id.textTotal);
         dbHelper = new DatabaseHelper(this);
 
-        categoriaAtual = getIntent().getStringExtra("categoria");
-        textCategoria.setText(categoriaAtual);
+        Intent intent = getIntent();
+        categoriaAtual = intent.getStringExtra("categoria");
+        dataInicio = intent.getStringExtra("data_inicio");
+        dataFim = intent.getStringExtra("data_fim");
 
+        String[] partes = dataFim.split("-");
+
+        int ano = Integer.parseInt(partes[0]);
+        int mes = Integer.parseInt(partes[1]);
+
+        atualizarTituloResumo(mes, ano, categoriaAtual);
         carregarDespesas();
+    }
+
+    private void atualizarTituloResumo(int mes, int ano, String categoria) {
+        Calendar tempCalendario = Calendar.getInstance();
+        tempCalendario.set(Calendar.MONTH, mes - 1);
+        tempCalendario.set(Calendar.YEAR, ano);
+
+        String nomeMes = new SimpleDateFormat("MMMM", Locale.getDefault()).format(tempCalendario.getTime());
+        String tituloResumo = String.format("Gastos com %s em %s de %04d", categoria, nomeMes, ano);
+
+        textCategoria.setText(tituloResumo);
     }
 
     @Override
@@ -62,7 +87,7 @@ public class DetalhesCategoriaActivity extends AppCompatActivity {
     }
 
     private void carregarDespesas() {
-        List<Despesa> despesas = dbHelper.obterDespesasPorCategoria(categoriaAtual);
+        List<Despesa> despesas = dbHelper.obterDespesasPorCategoriaEData(categoriaAtual, dataInicio, dataFim);
 
         DespesaAdapter adapter = new DespesaAdapter(
                 this,

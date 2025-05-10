@@ -109,7 +109,6 @@ public class ResumoActivity extends AppCompatActivity {
         exibirTotalGeral(listaDespesas);
         GraficoDespesas despesasPorCategoria = mapearListaEGraficoDeDespesas(result);
         plotarGraficoDespesasPorCategoria(despesasPorCategoria);
-
     }
 
     private void settarValoresPadraoParaDatas() {
@@ -239,8 +238,13 @@ public class ResumoActivity extends AppCompatActivity {
             String semEmoji = itemClicado.substring(2); // Remove o primeiro caractere (emoji)
             String categoria = semEmoji.split(":")[0].trim(); // Pega tudo até o primeiro ":" e remove espaços
 
+            String dataInicio = editDataInicio.getText().toString();
+            String dataFim = editDataFim.getText().toString();
+
             Intent intent = new Intent(ResumoActivity.this, DetalhesCategoriaActivity.class);
             intent.putExtra("categoria", categoria);
+            intent.putExtra("data_inicio", dataInicio);
+            intent.putExtra("data_fim", dataFim);
             startActivity(intent);
         });
     }

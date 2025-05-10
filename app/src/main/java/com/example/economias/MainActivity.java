@@ -150,7 +150,12 @@ public class MainActivity extends AppCompatActivity {
             String categoriaSelecionada = despesaSelecionada.getCategoria();
 
             Intent intent = new Intent(MainActivity.this, DetalhesCategoriaActivity.class);
+
+            String[] dataInicioEDataFim = Utils.getPrimeiroEUltimoDiaDoMes(despesaSelecionada.getDataDespesa());
+
             intent.putExtra("categoria", categoriaSelecionada);
+            intent.putExtra("data_inicio", dataInicioEDataFim[0]);
+            intent.putExtra("data_fim", dataInicioEDataFim[1]);
             startActivityForResult(intent, 1);
         });
     }
