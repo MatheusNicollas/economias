@@ -1,4 +1,4 @@
-package com.example.economias;
+package com.example.economias.hashmap;
 
 import java.util.HashMap;
 
